@@ -3,13 +3,23 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 // Initialize Gemini AI client
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
-// Use Gemini 3.1 Flash for fast, high-quality content generation
+// Text-only model for copy generation
 const model = genAI.getGenerativeModel({ 
   model: 'gemini-1.5-flash',
   generationConfig: {
-    temperature: 0.7, // Creative but consistent
-    topP: 0.8, // Focus on most likely outcomes
-    maxOutputTokens: 1000 // Allow detailed responses
+    temperature: 0.7,
+    topP: 0.8,
+    maxOutputTokens: 1000
+  }
+})
+
+// Multimodal model for image analysis (supports vision)
+const visionModel = genAI.getGenerativeModel({
+  model: 'gemini-1.5-flash',
+  generationConfig: {
+    temperature: 0.4,
+    topP: 0.85,
+    maxOutputTokens: 1200
   }
 })
 
@@ -152,4 +162,123 @@ export function validatePropertyData(propertyData: any) {
   }
   
   return true
+}
+
+// ─── NEW: Georgia-focused real-estate copywriting ─────────────────────────────
+
+export interface RealEstateCopyInput {
+  /** Free-text description of the property or listing link */
+  description: string
+  /** Language the AI must respond in, e.g. "Georgian", "English", "Russian" */
+  language: string
+}
+
+export interface RealEstateCopyOutput {
+  facebook: string
+  instagram: string
+  listingDescription: string
+}
+
+/**
+ * Generate Facebook/Instagram marketing copy for a Georgian real estate listing.
+ * System instruction enforces the premium Georgia realtor persona.
+ */
+export async function generateRealEstateCopy(
+  input: RealEstateCopyInput
+): Promise<RealEstateCopyOutput> {
+  const systemInstruction = `Act as a premium real estate copywriter in Georgia. \
+Use emotional hooks, mention specific benefits (e.g., 'მზიანი ბინა', 'პრემიუმ ლოკაცია'), \
+and include relevant emojis and hashtags. Output must be in the language the user demands.`
+
+  const copyModel = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction,
+    generationConfig: { temperature: 0.8, topP: 0.85, maxOutputTokens: 1200 },
+  })
+
+  const prompt = `
+Property description provided by the user:
+"""
+${input.description}
+"""
+
+Output language: ${input.language}
+
+Generate three distinct marketing pieces and return ONLY valid JSON in this exact shape:
+{
+  "facebook": "<Facebook post – 400-500 chars, community-focused, emojis + hashtags>",
+  "instagram": "<Instagram caption – max 300 chars, lifestyle hook, emojis + hashtags>",
+  "listingDescription": "<Professional Zillow-style listing – 200-300 words, no emojis>"
+}
+`
+
+  try {
+    const result = await copyModel.generateContent(prompt)
+    const text = result.response.text()
+    const match = text.match(/\{[\s\S]*\}/)
+    if (!match) throw new Error('AI did not return valid JSON')
+    return JSON.parse(match[0]) as RealEstateCopyOutput
+  } catch (error) {
+    console.error('generateRealEstateCopy error:', error)
+    throw new Error('Failed to generate real estate copy. Please try again.')
+  }
+}
+
+// ─── NEW: Multimodal image analysis ──────────────────────────────────────────
+
+export interface ImageAnalysisOutput {
+  /** Short headline about the image quality / suitability */
+  headline: string
+  /** Lighting quality assessment */
+  lighting: string
+  /** Key features visible in the image */
+  features: string[]
+  /** Suggested improvements for photography */
+  suggestions: string[]
+  /** Ready-to-use listing description based on the image */
+  listingDescription: string
+}
+
+/**
+ * Analyse a property image using Gemini vision and return a structured report
+ * plus a ready-to-use high-quality listing description.
+ * @param imageFile - A browser File object (JPEG / PNG / WebP)
+ */
+export async function analyzeAndDescribeImage(
+  imageFile: File
+): Promise<ImageAnalysisOutput> {
+  // Convert File → base64 inline data
+  const arrayBuffer = await imageFile.arrayBuffer()
+  const base64 = btoa(
+    new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '')
+  )
+
+  const imagePart = {
+    inlineData: {
+      mimeType: imageFile.type as 'image/jpeg' | 'image/png' | 'image/webp',
+      data: base64,
+    },
+  }
+
+  const prompt = `You are an expert real estate photography consultant and listing copywriter.
+Analyse the provided property image thoroughly and return ONLY valid JSON with this exact shape:
+{
+  "headline": "<one-sentence overall impression of the photo quality and suitability>",
+  "lighting": "<lighting quality assessment – e.g. Natural, Bright, Dim, Overexposed>",
+  "features": ["<visible feature 1>", "<visible feature 2>", "...up to 6 features>"],
+  "suggestions": ["<photography improvement tip 1>", "<tip 2>", "...up to 4 tips>"],
+  "listingDescription": "<A professional, vivid 150-200 word listing description written in English, based solely on what you see in the image. Highlight light, space, finishes, and atmosphere.>"
+}
+Do NOT include any text outside the JSON object.`
+
+  try {
+    const result = await visionModel.generateContent([prompt, imagePart])
+    const text = result.response.text()
+    const match = text.match(/\{[\s\S]*\}/)
+    if (!match) throw new Error('AI did not return valid JSON')
+    return JSON.parse(match[0]) as ImageAnalysisOutput
+  } catch (error) {
+    console.error('analyzeAndDescribeImage error:', error)
+    throw new Error('Failed to analyse image. Please try again.')
+  }
 }
