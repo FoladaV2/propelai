@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
 // Use Gemini 3.1 Flash for fast, high-quality content generation
 const model = genAI.getGenerativeModel({ 
-  model: 'gemini-3.1-flash',
+  model: 'gemini-1.5-flash',
   generationConfig: {
     temperature: 0.7, // Creative but consistent
     topP: 0.8, // Focus on most likely outcomes
@@ -123,7 +123,7 @@ export async function generateBatchCopy(properties: any[]) {
     )
     
     return results
-      .filter(result => result.status === 'fulfilled')
+      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
       .map(result => result.value)
   } catch (error) {
     console.error('Error in batch copy generation:', error)

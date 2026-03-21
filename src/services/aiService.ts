@@ -4,8 +4,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
 // Model configurations
-const FLASH_MODEL = 'gemini-3.1-flash-image-preview'
-const VISION_MODEL = 'gemini-3.1-flash-image-preview'
+const FLASH_MODEL = 'gemini-1.5-flash'
+const VISION_MODEL = 'gemini-1.5-flash'
 
 export interface PropertyDetails {
   title: string
