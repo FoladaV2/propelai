@@ -7,6 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { aiService, type PropertyDetails } from '../services/aiService'
+import { listingService } from '../services/listingService'
+import { useAuth } from '../contexts/AuthContext'
 import { 
   Upload, 
   X, 
@@ -44,9 +46,11 @@ interface UploadedImage {
 
 const NewListing: React.FC = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [enhancedImagePrompt, setEnhancedImagePrompt] = useState('')
   const [instagramCaption, setInstagramCaption] = useState('')
@@ -162,18 +166,63 @@ const NewListing: React.FC = () => {
     }
   }
 
-  const onSubmit = async (_data: PropertyFormData) => {
-    if (uploadedImages.length === 0) {
-      toast.error('Please upload at least one image')
-      return
-    }
+  const onSubmit = async (data: PropertyFormData) => {
+    if (!user) return
+    setIsSaving(true)
 
     try {
-      // Here you would normally send data to your backend
-      toast.success('Listing created successfully!')
-      navigate('/dashboard')
+      await listingService.createListing({
+        user_id: user.id,
+        title: data.title,
+        address: data.address,
+        price: Number(data.price),
+        bedrooms: Number(data.bedrooms),
+        bathrooms: Number(data.bathrooms),
+        square_footage: Number(data.squareFootage),
+        property_type: data.propertyType,
+        description: data.description,
+        status: 'Draft'
+      })
+      toast.success('Listing saved as draft!')
+      navigate('/listings')
     } catch (error) {
-      toast.error('Failed to create listing')
+      console.error('Save error:', error)
+      toast.error('Failed' + (error instanceof Error ? ': ' + error.message : ' to save listing'))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handlePublish = async () => {
+    if (!user) return
+    setIsSaving(true)
+    const data = getValues()
+
+    try {
+      await listingService.createListing({
+        user_id: user.id,
+        title: data.title,
+        address: data.address,
+        price: Number(data.price),
+        bedrooms: Number(data.bedrooms),
+        bathrooms: Number(data.bathrooms),
+        square_footage: Number(data.squareFootage),
+        property_type: data.propertyType,
+        description: data.description,
+        status: 'Published',
+        ai_assets: {
+          instagramCaption,
+          linkedInBlurb,
+          enhancedImagePrompt
+        }
+      })
+      toast.success('Listing published successfully!')
+      navigate('/listings')
+    } catch (error) {
+      console.error('Publish error:', error)
+      toast.error('Failed to publish listing')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -419,27 +468,28 @@ const NewListing: React.FC = () => {
                       <button
                         type="button"
                         onClick={simulateAIProcessing}
-                        disabled={uploadedImages.length === 0 || isProcessing}
-                        className="flex-1 py-3 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        disabled={uploadedImages.length === 0 || isProcessing || isSaving}
+                        className="flex-1 py-3 px-6 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {isProcessing ? (
                           <>
                             <Loader2 size={20} className="animate-spin" />
-                            Processing with AI...
+                            Processing...
                           </>
                         ) : (
                           <>
                             <Sparkles size={20} />
-                            Generate AI Preview
+                            Generate Preview
                           </>
                         )}
                       </button>
                       
                       <button
                         type="submit"
-                        className="py-3 px-6 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                        disabled={isSaving || isProcessing}
+                        className="py-3 px-6 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 flex items-center justify-center min-w-[140px]"
                       >
-                        Save as Draft
+                        {isSaving ? <Loader2 size={20} className="animate-spin" /> : 'Save as Draft'}
                       </button>
                     </div>
                   </form>
@@ -458,11 +508,11 @@ const NewListing: React.FC = () => {
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                       <Sparkles size={20} className="text-indigo-400" />
-                      AI-Enhanced Preview
+                      Preview
                     </h2>
                     <div className="flex items-center gap-2 text-green-400">
                       <CheckCircle size={20} />
-                      <span className="font-medium">AI Processing Complete</span>
+                      <span className="font-medium">Processing Complete</span>
                     </div>
                   </div>
 
@@ -499,7 +549,7 @@ const NewListing: React.FC = () => {
                         <h3 className="text-white font-medium mb-4 flex items-center gap-2">
                           📱 Instagram Caption
                         </h3>
-                        <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/30 rounded-xl p-6">
+                        <div className="bg-pink-500/10 border border-pink-500/30 rounded-xl p-6">
                           <p className="text-white/80 leading-relaxed whitespace-pre-line">
                             {instagramCaption}
                           </p>
@@ -511,7 +561,7 @@ const NewListing: React.FC = () => {
                         <h3 className="text-white font-medium mb-4 flex items-center gap-2">
                           💼 LinkedIn Post
                         </h3>
-                        <div className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/30 rounded-xl p-6">
+                        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
                           <p className="text-white/80 leading-relaxed whitespace-pre-line">
                             {linkedInBlurb}
                           </p>
@@ -523,7 +573,7 @@ const NewListing: React.FC = () => {
                         <h3 className="text-white font-medium mb-4 flex items-center gap-2">
                           🎨 Image Enhancement Prompt
                         </h3>
-                        <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-6">
+                        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6">
                           <p className="text-white/80 leading-relaxed text-sm">
                             {enhancedImagePrompt}
                           </p>
@@ -561,12 +611,17 @@ const NewListing: React.FC = () => {
                 <div className="flex gap-4">
                   <button
                     onClick={() => setShowPreview(false)}
-                    className="py-3 px-6 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                    disabled={isSaving}
+                    className="py-3 px-6 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50"
                   >
                     Back to Edit
                   </button>
-                  <button className="flex-1 py-3 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all">
-                    Publish Listing
+                  <button 
+                    onClick={handlePublish}
+                    disabled={isSaving}
+                    className="flex-1 py-3 px-6 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isSaving ? <Loader2 size={20} className="animate-spin" /> : 'Publish Listing'}
                   </button>
                 </div>
               </motion.div>

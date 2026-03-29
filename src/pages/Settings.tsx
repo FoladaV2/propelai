@@ -69,7 +69,7 @@ const Settings: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-6 mb-8">
-                  <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-xl">
+                  <div className="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-xl">
                     P
                   </div>
                   <div>
@@ -99,7 +99,7 @@ const Settings: React.FC = () => {
                   </div>
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-white/80 mb-2">Bio</label>
-                    <textarea rows={4} defaultValue="Luxury real estate specialist focused on high-end properties and AI-driven marketing strategies." className="w-full px-4 py-3 bg-slate-700/50 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none" />
+                    <textarea rows={4} defaultValue="Luxury real estate specialist focused on high-end properties and modern marketing strategies." className="w-full px-4 py-3 bg-slate-700/50 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none" />
                   </div>
                 </div>
               </div>

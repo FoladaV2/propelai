@@ -1,48 +1,40 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sliders, FileText, Share2 } from 'lucide-react'
+import { Sliders, FileText, Video } from 'lucide-react'
 import Layout from '../components/Layout'
-import { ImageTransformer, CopyGenerator } from '../components/AILab'
-import ListingDescriptionGenerator from '../components/ListingDescriptionGenerator'
-import SocialCaptionGenerator from '../components/SocialCaptionGenerator'
+import { ImageTransformer, CopyGenerator, VideoGenerator } from '../components/AILab'
 
-type Tab = 'transform' | 'copy' | 'listing' | 'social'
+type Tab = 'transform' | 'copy' | 'video'
 
 const AILab: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('transform')
 
   return (
     <Layout
-      title="AI Lab"
-      subtitle="Powered by OpenRouter & Gemini"
+      title="Marketing Studio"
+      subtitle="Professional Property Tools"
     >
       <div className="max-w-6xl mx-auto space-y-6">
             {/* Tab Navigation */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-2 mb-8">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-2 mb-8 inline-flex">
               <div className="flex flex-wrap gap-2">
                 <TabButton
                   active={activeTab === 'transform'}
                   onClick={() => setActiveTab('transform')}
                   icon={<Sliders size={18} />}
-                  label="Image Transform"
+                  label="Image Editor"
                 />
                 <TabButton
                   active={activeTab === 'copy'}
                   onClick={() => setActiveTab('copy')}
                   icon={<FileText size={18} />}
-                  label="Copy Generator"
+                  label="Marketing Copy"
                 />
                 <TabButton
-                  active={activeTab === 'listing'}
-                  onClick={() => setActiveTab('listing')}
-                  icon={<FileText size={18} />}
-                  label="Listing Description"
-                />
-                <TabButton
-                  active={activeTab === 'social'}
-                  onClick={() => setActiveTab('social')}
-                  icon={<Share2 size={18} />}
-                  label="Social Caption"
+                  active={activeTab === 'video'}
+                  onClick={() => setActiveTab('video')}
+                  icon={<Video size={18} />}
+                  label="Property Video"
                 />
               </div>
             </div>
@@ -58,8 +50,7 @@ const AILab: React.FC = () => {
               >
                 {activeTab === 'transform' && <ImageTransformer />}
                 {activeTab === 'copy' && <CopyGenerator />}
-                {activeTab === 'listing' && <ListingDescriptionGenerator />}
-                {activeTab === 'social' && <SocialCaptionGenerator />}
+                {activeTab === 'video' && <VideoGenerator />}
               </motion.div>
             </AnimatePresence>
       </div>

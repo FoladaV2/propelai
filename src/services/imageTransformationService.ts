@@ -62,10 +62,35 @@ export class ImageTransformationService {
 
   /**
    * Download enhanced image
+   * Handles cross-origin issues by fetching as blob first
    */
-  downloadEnhancedImage(enhancedImageUrl: string, originalFilename: string): void {
+  async downloadEnhancedImage(enhancedImageUrl: string, originalFilename: string): Promise<void> {
+    try {
+      // For base64 or local URLs, we can just use the attribute
+      if (enhancedImageUrl.startsWith('data:') || enhancedImageUrl.startsWith('blob:') || window.location.origin === new URL(enhancedImageUrl, window.location.origin).origin) {
+        this.triggerDownload(enhancedImageUrl, originalFilename)
+        return
+      }
+
+      // For cross-origin URLs, fetch as blob to bypass the "opening in new tab" behavior
+      const response = await fetch(enhancedImageUrl)
+      const blob = await response.blob()
+      const blobUrl = URL.createObjectURL(blob)
+      
+      this.triggerDownload(blobUrl, originalFilename)
+      
+      // Cleanup
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
+    } catch (error) {
+      console.error('Download error:', error)
+      // Fallback to direct link if fetch fails
+      this.triggerDownload(enhancedImageUrl, originalFilename)
+    }
+  }
+
+  private triggerDownload(url: string, originalFilename: string): void {
     const link = document.createElement('a')
-    link.href = enhancedImageUrl
+    link.href = url
     link.download = `enhanced_${originalFilename}`
     document.body.appendChild(link)
     link.click()

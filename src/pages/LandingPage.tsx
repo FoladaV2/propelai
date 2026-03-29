@@ -154,7 +154,7 @@ const LandingPage: React.FC = () => {
                     <div className="h-32 md:h-64 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 relative overflow-hidden">
                       <div className="absolute inset-0 flex items-center justify-center flex-col gap-4 text-indigo-400/50">
                         <Image className="w-12 h-12" />
-                        <span className="font-medium">AI Magic in progress...</span>
+                        <span className="font-medium">Processing image...</span>
                       </div>
                     </div>
                     <div className="flex gap-4">

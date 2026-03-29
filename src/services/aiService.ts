@@ -154,6 +154,73 @@ export class AIService {
   }
 
   /**
+   * Generate specialized Instagram content
+   */
+  async generateInstagramContent(propertyDetails: PropertyDetails): Promise<string> {
+    const prompt = `
+      Create a viral-style Instagram caption for this property:
+      Price: ${propertyDetails.price}
+      Location: ${propertyDetails.address}
+      Features: ${propertyDetails.bedrooms}bd, ${propertyDetails.bathrooms}ba, ${propertyDetails.squareFootage}sqft
+      
+      Requirements:
+      - Engaging hook in the first line
+      - Use lifestyle-driven storytelling
+      - Strategic use of emojis
+      - Call to action (e.g., "Link in bio", "DM for a tour")
+      - SEO-optimized body text
+      - A block of 10-15 high-reach real estate hashtags
+      - Focus on aesthetic and emotional appeal
+    `
+    const result = await this.flashModel.generateContent(prompt)
+    return result.response.text()
+  }
+
+  /**
+   * Generate professional LinkedIn ROI content
+   */
+  async generateLinkedInContent(propertyDetails: PropertyDetails): Promise<string> {
+    const prompt = `
+      Create a data-driven LinkedIn post for this investment opportunity:
+      Price: ${propertyDetails.price}
+      Location: ${propertyDetails.address}
+      Details: ${propertyDetails.bedrooms}bd, ${propertyDetails.bathrooms}ba, ${propertyDetails.squareFootage}sqft
+      
+      Requirements:
+      - Professional tone for investors and high-end agents
+      - Focus on property value and ROI potential
+      - Mention local market keywords
+      - Clear, bulleted list of high-value features
+      - Business-oriented call to action
+      - Professional real estate networking hashtags
+    `
+    const result = await this.flashModel.generateContent(prompt)
+    return result.response.text()
+  }
+
+  /**
+   * Generate detailed Facebook/Zillow listing content
+   */
+  async generateZillowContent(propertyDetails: PropertyDetails): Promise<string> {
+    const prompt = `
+      Write a compelling, detailed property description for Zillow and Facebook Marketplace:
+      Title: ${propertyDetails.title}
+      Location: ${propertyDetails.address}
+      Specs: ${propertyDetails.price}, ${propertyDetails.bedrooms} beds, ${propertyDetails.bathrooms} baths, ${propertyDetails.squareFootage} sqft
+      Description: ${propertyDetails.description || 'Modern luxury home'}
+      
+      Requirements:
+      - Structured with a strong introduction, detailed walkthrough, and lifestyle conclusion
+      - Follow residential listing best practices (no fair housing violations)
+      - Natural integration of local SEO keywords (neighborhood, proximity to landmarks)
+      - Highlight specific property types: ${propertyDetails.propertyType}
+      - Clear contact instructions
+    `
+    const result = await this.flashModel.generateContent(prompt)
+    return result.response.text()
+  }
+
+  /**
    * Complete AI processing for property listing
    */
   async processPropertyListing(
@@ -164,11 +231,11 @@ export class AIService {
       // Process first image for enhancement prompt
       const enhancedImagePrompt = await this.enhancePropertyImage(imageFiles[0])
       
-      // Generate marketing content
-      const { instagramCaption, linkedInBlurb } = await this.generateMarketingContent(
-        propertyDetails,
-        imageFiles
-      )
+      // Generate marketing content in parallel
+      const [instagramCaption, linkedInBlurb] = await Promise.all([
+        this.generateInstagramContent(propertyDetails),
+        this.generateLinkedInContent(propertyDetails)
+      ])
 
       return {
         enhancedImagePrompt,
@@ -200,5 +267,4 @@ export class AIService {
   }
 }
 
-// Export singleton instance
 export const aiService = new AIService()

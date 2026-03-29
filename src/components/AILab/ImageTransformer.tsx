@@ -53,6 +53,8 @@ const ImageTransformer: React.FC = () => {
   const [customPrompt, setCustomPrompt] = useState('')
   const [sliderPosition, setSliderPosition] = useState(50)
 
+  const [isDownloading, setIsDownloading] = useState(false)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageUpload = useCallback((file: File | null) => {
@@ -100,13 +102,19 @@ const ImageTransformer: React.FC = () => {
     }
   }
 
-  const downloadEnhanced = () => {
+  const downloadEnhanced = async () => {
     if (transformation && uploadedImage) {
-      imageTransformationService.downloadEnhancedImage(
-        transformation.enhancedImageUrl,
-        uploadedImage.name
-      )
-      toast.success('Enhanced image downloaded!')
+      try {
+        setIsDownloading(true)
+        await imageTransformationService.downloadEnhancedImage(
+          transformation.enhancedImageUrl,
+          uploadedImage.name
+        )
+      } catch (error) {
+        toast.error('Failed to download image')
+      } finally {
+        setIsDownloading(false)
+      }
     }
   }
 
@@ -226,16 +234,16 @@ const ImageTransformer: React.FC = () => {
               <button
                 onClick={transformImageAction}
                 disabled={isProcessing}
-                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-xl shadow-indigo-500/20"
+                className="w-full py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-xl"
               >
                 {isProcessing ? (
                   <>
                     <Loader2 size={24} className="animate-spin" />
-                    Transforming with AI...
+                    Transforming Photo...
                   </>
                 ) : (
                   <>
-                    <Sparkles size={24} />
+                    <ImageIcon size={24} />
                     Transform Property Photo
                   </>
                 )}
@@ -259,7 +267,7 @@ const ImageTransformer: React.FC = () => {
               <div className="mt-8 flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-xs text-white/20 justify-center">
                   <Info size={14} />
-                  <span>Powered by Flux & Stability AI</span>
+                  <span>High Resolution Support</span>
                 </div>
               </div>
             </div>
@@ -275,10 +283,15 @@ const ImageTransformer: React.FC = () => {
               {transformation && (
                 <button
                   onClick={downloadEnhanced}
-                  className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-all flex items-center gap-2 text-xs font-bold"
+                  disabled={isDownloading}
+                  className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-all flex items-center gap-2 text-xs font-bold disabled:opacity-50"
                 >
-                  <Download size={14} />
-                  Export High-Res
+                  {isDownloading ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Download size={14} />
+                  )}
+                  {isDownloading ? 'Preparing...' : 'Export High-Res'}
                 </button>
               )}
             </div>

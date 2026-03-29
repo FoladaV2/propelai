@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { Toaster } from 'sonner'
 import ProtectedRoute from './components/ProtectedRoute'
+import GuestRoute from './components/GuestRoute'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import Dashboard from './pages/Dashboard'
@@ -22,8 +23,16 @@ function App() {
           theme="dark"
         />
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          } />
+          <Route path="/signup" element={
+            <GuestRoute>
+              <SignUp />
+            </GuestRoute>
+          } />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Dashboard />
@@ -49,7 +58,12 @@ function App() {
               <Settings />
             </ProtectedRoute>
           } />
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={
+            <GuestRoute>
+              <LandingPage />
+            </GuestRoute>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

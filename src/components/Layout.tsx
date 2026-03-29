@@ -14,7 +14,7 @@ const Layout = ({ children, title, subtitle, actions }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-slate-900 relative flex overflow-hidden">
       {/* Background gradients */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 opacity-80 pointer-events-none" />
+      <div className="fixed inset-0 bg-slate-900 opacity-80 pointer-events-none" />
       
       {/* Grid pattern overlay */}
       <div 

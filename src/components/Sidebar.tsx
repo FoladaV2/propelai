@@ -15,7 +15,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const navigationItems = [
     { name: 'Dashboard', icon: LayoutDashboard, id: 'Dashboard', path: '/dashboard' },
     { name: 'My Listings', icon: Home, id: 'Listings', path: '/listings' },
-    { name: 'AI Lab', icon: Sliders, id: 'AI Lab', path: '/ai-lab' },
+    { name: 'Studio', icon: Sliders, id: 'Studio', path: '/ai-lab' },
     { name: 'Settings', icon: Settings, id: 'Settings', path: '/settings' },
   ];
 
@@ -34,7 +34,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       <div className="flex items-center justify-between p-6 border-b border-white/10">
         {!isCollapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-sm">P</span>
             </div>
             <span className="text-white font-semibold text-lg">Propel</span>
