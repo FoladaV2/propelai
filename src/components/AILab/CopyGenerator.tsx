@@ -3,10 +3,8 @@ import { toast } from 'sonner'
 import {
   FileText,
   Loader2,
-  Sparkles,
   Copy,
   RotateCcw,
-  Globe,
   Instagram,
   Linkedin,
   Search,
@@ -95,7 +93,7 @@ const CopyGenerator: React.FC = () => {
         linkedin: link,
         zillow: zil
       })
-      
+
       toast.success('Smart Copy blocks generated!')
     } catch (err) {
       toast.error('Failed to generate copy. Please check your API key.')
@@ -130,7 +128,7 @@ const CopyGenerator: React.FC = () => {
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
             <TrendingUp size={120} />
           </div>
-          
+
           <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
               <TrendingUp size={24} />
@@ -263,9 +261,8 @@ const CopyGenerator: React.FC = () => {
               <button
                 key={p.id}
                 onClick={() => setActivePlatform(p.id)}
-                className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold transition-all relative ${
-                  activePlatform === p.id ? p.color : 'text-white/30 hover:text-white/60'
-                }`}
+                className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-bold transition-all relative ${activePlatform === p.id ? p.color : 'text-white/30 hover:text-white/60'
+                  }`}
               >
                 <p.icon size={18} />
                 {p.label}
@@ -290,7 +287,7 @@ const CopyGenerator: React.FC = () => {
             ) : (
               <div className="flex-1 flex flex-col space-y-6">
                 {/* Meta Highlights */}
-                  <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
                   <div className="px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center gap-2 shrink-0">
                     <Search size={14} className="text-indigo-400" />
                     <span className="text-[10px] uppercase font-black text-indigo-400">SEO Optimized</span>
