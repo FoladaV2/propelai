@@ -8,6 +8,8 @@ import Dashboard from './pages/Dashboard'
 import NewListing from './pages/NewListing'
 import AILab from './pages/AILab'
 import LandingPage from './pages/LandingPage'
+import MyListings from './pages/MyListings'
+import Settings from './pages/Settings'
 
 function App() {
   return (
@@ -35,6 +37,16 @@ function App() {
           <Route path="/ai-lab" element={
             <ProtectedRoute>
               <AILab />
+            </ProtectedRoute>
+          } />
+          <Route path="/listings" element={
+            <ProtectedRoute>
+              <MyListings />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           } />
           <Route path="/" element={<LandingPage />} />

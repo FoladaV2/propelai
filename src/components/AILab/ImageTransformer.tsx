@@ -1,27 +1,61 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import { toast } from 'sonner'
 import {
   Upload,
   Download,
   Sparkles,
-  Settings,
   Loader2,
-  CheckCircle,
   Sliders,
   Image as ImageIcon,
+  Sun,
+  Home,
+  Eraser,
+  Wand2,
+  History,
+  Info,
 } from 'lucide-react'
 import { imageTransformationService, type TransformationResponse } from '../../services/imageTransformationService'
+import { type TransformationType } from '../../lib/openrouter'
+
+const TRANSFORMATION_MODES: { id: TransformationType; label: string; icon: any; description: string }[] = [
+  {
+    id: 'staging',
+    label: 'Virtual Staging',
+    icon: Home,
+    description: 'Add modern furniture to empty rooms',
+  },
+  {
+    id: 'twilight',
+    label: 'Day to Dusk',
+    icon: Sun,
+    description: 'Convert day photos to twilight shots',
+  },
+  {
+    id: 'enhance',
+    label: 'HDR Enhance',
+    icon: Wand2,
+    description: 'Professional color & lens correction',
+  },
+  {
+    id: 'declutter',
+    label: 'Object Removal',
+    icon: Eraser,
+    description: 'Clean mess and personlized items',
+  },
+]
 
 const ImageTransformer: React.FC = () => {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>('')
   const [transformation, setTransformation] = useState<TransformationResponse | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [aspectRatio, setAspectRatio] = useState<'original' | '4:5' | '16:9'>('original')
+  const [mode, setMode] = useState<TransformationType>('enhance')
+  const [customPrompt, setCustomPrompt] = useState('')
   const [sliderPosition, setSliderPosition] = useState(50)
 
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleImageUpload = useCallback((file: File | null) => {
     if (file && file.type.startsWith('image/')) {
       setUploadedImage(file)
       setImagePreview(URL.createObjectURL(file))
@@ -40,16 +74,10 @@ const ImageTransformer: React.FC = () => {
     e.preventDefault()
     e.stopPropagation()
     const file = e.dataTransfer.files?.[0]
-    if (file && file.type.startsWith('image/')) {
-      setUploadedImage(file)
-      setImagePreview(URL.createObjectURL(file))
-      setTransformation(null)
-      setSliderPosition(50)
-      toast.success('Image uploaded successfully')
-    }
-  }, [])
+    handleImageUpload(file ?? null)
+  }, [handleImageUpload])
 
-  const transformImage = async () => {
+  const transformImageAction = async () => {
     if (!uploadedImage) {
       toast.error('Please upload an image first')
       return
@@ -58,7 +86,8 @@ const ImageTransformer: React.FC = () => {
     try {
       const result = await imageTransformationService.transformPropertyPhoto({
         imageFile: uploadedImage,
-        aspectRatio,
+        type: mode,
+        prompt: customPrompt,
       })
       setTransformation(result)
       setSliderPosition(50)
@@ -86,170 +115,178 @@ const ImageTransformer: React.FC = () => {
     setImagePreview('')
     setTransformation(null)
     setSliderPosition(50)
-    URL.revokeObjectURL(imagePreview)
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Left Column - Upload & Controls */}
+      {/* ── Left Column: Controls ────────────────────────────────────────── */}
       <div className="space-y-6">
-        {/* Upload Section */}
+        {/* Step 1: Upload */}
         <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
           <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <Upload size={20} className="text-indigo-400" />
+            <span className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-bold">1</span>
             Upload Property Photo
           </h2>
 
-          {/* Drag & Drop Area */}
           <div
-            className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
+            className={`relative border-2 border-dashed rounded-2xl p-10 text-center transition-all cursor-pointer ${
               imagePreview
-                ? 'border-indigo-500 bg-indigo-500/10'
-                : 'border-white/20 hover:border-white/40 bg-white/5'
+                ? 'border-indigo-500/50 bg-indigo-500/5'
+                : 'border-white/10 hover:border-white/30 bg-slate-900/50 hover:bg-slate-900/80'
             }`}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            onClick={() => document.getElementById('file-input')?.click()}
+            onClick={() => fileInputRef.current?.click()}
           >
             <input
-              id="file-input"
+              ref={fileInputRef}
               type="file"
               accept="image/*"
-              onChange={handleImageUpload}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={(e) => handleImageUpload(e.target.files?.[0] ?? null)}
+              className="hidden"
             />
 
             {!imagePreview ? (
               <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/10">
-                  <ImageIcon size={32} className="text-indigo-400" />
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-indigo-500/10 text-indigo-400">
+                  <Upload size={32} />
                 </div>
                 <div>
-                  <p className="text-white font-medium mb-2">Drag & drop property photo</p>
-                  <p className="text-white/60 text-sm">or click to browse</p>
+                  <p className="text-white font-medium mb-1.5 text-lg">Drop your photo here</p>
+                  <p className="text-white/40 text-sm">PNG, JPG or WebP (Max 10MB)</p>
                 </div>
               </div>
             ) : (
-              <div className="relative">
+              <div className="relative group">
                 <img
                   src={imagePreview}
                   alt="Uploaded property"
-                  className="w-full h-48 object-cover rounded-lg"
+                  className="w-full h-56 object-cover rounded-xl shadow-2xl"
                 />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                  <p className="text-white font-medium flex items-center gap-2"><History size={18} /> Click to change</p>
+                </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); resetImage() }}
-                  className="absolute top-2 right-2 w-8 h-8 bg-red-500/80 text-white rounded-full flex items-center justify-center hover:bg-red-500 transition-colors"
+                  className="absolute -top-3 -right-3 w-10 h-10 bg-rose-500 text-white rounded-full flex items-center justify-center hover:bg-rose-600 transition-colors shadow-lg z-10"
                 >
                   ×
                 </button>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Settings */}
-          {imagePreview && (
-            <div className="mt-6 space-y-4">
+        {/* Step 2: Transformation Mode */}
+        {imagePreview && (
+          <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+              <span className="w-8 h-8 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center text-sm font-bold">2</span>
+              Choose Transformation
+            </h2>
+
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {TRANSFORMATION_MODES.map((m) => {
+                const Icon = m.icon
+                const isActive = mode === m.id
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => setMode(m.id)}
+                    className={`flex flex-col items-start p-4 rounded-xl border transition-all text-left group ${
+                      isActive
+                        ? 'bg-violet-500/20 border-violet-500/50 text-violet-300'
+                        : 'bg-white/5 border-white/10 text-white/50 hover:border-white/20 hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon size={20} className={`mb-2 ${isActive ? 'text-violet-400' : 'text-white/40 group-hover:text-white/60'}`} />
+                    <span className="font-semibold text-sm mb-1">{m.label}</span>
+                    <span className="text-[10px] uppercase tracking-wider opacity-60 leading-tight">{m.description}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">
-                  <Settings size={16} className="inline mr-2" />
-                  Aspect Ratio
+                <label className="block text-xs font-semibold text-white/40 mb-2 uppercase tracking-widest">
+                  Custom Instructions (Optional)
                 </label>
-                <select
-                  value={aspectRatio}
-                  onChange={(e) => setAspectRatio(e.target.value as 'original' | '4:5' | '16:9')}
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
-                >
-                  <option value="original">Original</option>
-                  <option value="4:5">4:5 (Instagram)</option>
-                  <option value="16:9">16:9 (YouTube)</option>
-                </select>
+                <textarea
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  placeholder="e.g. Add luxury furniture, white oak floors, black accents..."
+                  className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none"
+                  rows={2}
+                />
               </div>
 
               <button
-                onClick={transformImage}
+                onClick={transformImageAction}
                 disabled={isProcessing}
-                className="w-full py-3 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-xl hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-xl shadow-indigo-500/20"
               >
                 {isProcessing ? (
                   <>
-                    <Loader2 size={20} className="animate-spin" />
-                    Processing with AI...
+                    <Loader2 size={24} className="animate-spin" />
+                    Transforming with AI...
                   </>
                 ) : (
                   <>
-                    <Sparkles size={20} />
-                    Transform Photo
+                    <Sparkles size={24} />
+                    Transform Property Photo
                   </>
                 )}
               </button>
             </div>
-          )}
-        </div>
-
-        {/* Transformation Info */}
-        {transformation && (
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-            <h3 className="text-white font-medium mb-4 flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-400" />
-              Transformation Complete
-            </h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-white/60">Processing Time:</span>
-                <span className="text-white font-medium">
-                  {(transformation.processingTime / 1000).toFixed(1)}s
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/60">Enhancement:</span>
-                <span className="text-green-400 font-medium">Architectural Photography</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/60">Resolution:</span>
-                <span className="text-white font-medium">2K JPEG</span>
-              </div>
-            </div>
-            <button
-              onClick={downloadEnhanced}
-              className="w-full mt-4 py-2 px-4 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors font-medium flex items-center justify-center gap-2"
-            >
-              <Download size={16} />
-              Download Enhanced
-            </button>
           </div>
         )}
       </div>
 
-      {/* Right Column - Before/After Slider */}
-      {imagePreview && (
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-          <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <Sliders size={20} className="text-indigo-400" />
-            Before / After Comparison
-          </h2>
-
-          <div className="relative">
-            <div className="relative h-96 bg-slate-700/30 rounded-xl overflow-hidden">
-              {/* Before Image */}
-              <div
-                className="absolute inset-0"
-                style={{ clipPath: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)` }}
-              >
-                <img
-                  src={imagePreview}
-                  alt="Before transformation"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  BEFORE
+      {/* ── Right Column: Preview ─────────────────────────────────────────── */}
+      <div className="h-full min-h-[500px]">
+        {!imagePreview ? (
+          <div className="h-full bg-slate-800/30 border border-dashed border-white/10 rounded-2xl flex items-center justify-center p-12">
+            <div className="text-center max-w-xs">
+              <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
+                <ImageIcon size={40} className="text-white/10" />
+              </div>
+              <p className="text-white/40 font-medium text-lg leading-relaxed">
+                Upload a property photo to begin transformation
+              </p>
+              <div className="mt-8 flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-xs text-white/20 justify-center">
+                  <Info size={14} />
+                  <span>Powered by Flux & Stability AI</span>
                 </div>
               </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-1 h-full flex flex-col shadow-2xl relative">
+            {/* Header bar */}
+            <div className="flex items-center justify-between px-6 py-4">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2 text-sm">
+                <Sliders size={18} className="text-indigo-400" />
+                Comparison Preview
+              </h3>
+              {transformation && (
+                <button
+                  onClick={downloadEnhanced}
+                  className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-all flex items-center gap-2 text-xs font-bold"
+                >
+                  <Download size={14} />
+                  Export High-Res
+                </button>
+              )}
+            </div>
 
+            {/* Slider Container */}
+            <div className="flex-1 relative m-4 overflow-hidden rounded-xl bg-slate-900 ring-1 ring-white/10 group">
               {/* After Image */}
-              <div
-                className="absolute inset-0"
-                style={{ clipPath: `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)` }}
-              >
+              <div className="absolute inset-0">
                 {transformation ? (
                   <img
                     src={transformation.enhancedImageUrl}
@@ -257,34 +294,42 @@ const ImageTransformer: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/60 bg-slate-700/50">
-                    <div className="text-center">
-                      <Sparkles size={48} className="mx-auto mb-2 opacity-50" />
-                      <p>Transform to see result</p>
-                    </div>
+                  <div className="w-full h-full flex flex-col items-center justify-center text-white/20 animate-pulse">
+                    <Sparkles size={64} className="mb-4 opacity-10" />
+                    <p className="font-medium text-lg">Waiting for transformation...</p>
                   </div>
                 )}
-                <div className="absolute top-4 right-4 bg-green-500/80 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  AFTER
+                {transformation && (
+                  <div className="absolute top-6 right-6 px-4 py-1.5 bg-emerald-500 text-white rounded-full text-xs font-black shadow-xl ring-2 ring-emerald-400/50">
+                    TRANSFORMED
+                  </div>
+                )}
+              </div>
+
+              {/* Before Image (Top Layer, clipped) */}
+              <div
+                className="absolute inset-0 z-10"
+                style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+              >
+                <img
+                  src={imagePreview}
+                  alt="Original property"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-6 left-6 px-4 py-1.5 bg-slate-900 border border-white/10 text-white rounded-full text-xs font-black shadow-xl">
+                  ORIGINAL
                 </div>
               </div>
 
-              {/* Divider Line */}
-              <div
-                className="absolute top-0 bottom-0 w-0.5 bg-white/80 shadow-lg"
-                style={{ left: `${sliderPosition}%` }}
-              />
-
               {/* Slider Handle */}
               <div
-                className="absolute top-1/2 w-10 h-10 bg-white rounded-full shadow-lg cursor-grab active:cursor-grabbing flex items-center justify-center -translate-y-1/2 -translate-x-1/2"
+                className="absolute inset-y-0 z-20 w-1 bg-white select-none cursor-ew-resize flex items-center justify-center"
                 style={{ left: `${sliderPosition}%` }}
                 onMouseDown={(e) => {
                   e.preventDefault()
-                  const container = e.currentTarget.closest('.relative') as HTMLElement
-                  const rect = container?.getBoundingClientRect()
+                  const container = e.currentTarget.parentElement as HTMLElement
                   const handleMouseMove = (moveEvent: MouseEvent) => {
-                    if (!rect) return
+                    const rect = container.getBoundingClientRect()
                     const x = moveEvent.clientX - rect.left
                     const pct = Math.max(0, Math.min(100, (x / rect.width) * 100))
                     setSliderPosition(pct)
@@ -294,24 +339,30 @@ const ImageTransformer: React.FC = () => {
                     document.removeEventListener('mouseup', handleMouseUp)
                     document.body.style.cursor = ''
                   }
-                  document.body.style.cursor = 'grabbing'
+                  document.body.style.cursor = 'ew-resize'
                   document.addEventListener('mousemove', handleMouseMove)
                   document.addEventListener('mouseup', handleMouseUp)
                 }}
               >
-                <div className="flex gap-0.5">
-                  <div className="w-0.5 h-5 bg-indigo-500 rounded-full" />
-                  <div className="w-0.5 h-5 bg-indigo-500 rounded-full" />
+                <div className="absolute w-12 h-12 bg-white rounded-full shadow-[0_0_20px_rgba(0,0,0,0.5)] border-4 border-slate-900 flex items-center justify-center -translate-x-1/2">
+                   <div className="flex gap-1">
+                      <div className="w-1 h-3 bg-indigo-500 rounded-full" />
+                      <div className="w-1 h-3 bg-indigo-500 rounded-full" />
+                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 text-center text-white/60 text-sm">
-              Drag slider to compare before / after • Click "Transform Photo" to enhance
+            <div className="px-8 pb-6 text-center">
+              <div className="flex items-center gap-4 justify-center text-xs text-white/30 font-medium">
+                <span className="flex items-center gap-1.5"><Sliders size={12} /> Drag to compare</span>
+                <div className="w-1 h-1 rounded-full bg-white/20" />
+                <span className="flex items-center gap-1.5 text-indigo-400"><History size={12} /> Real-time preview</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

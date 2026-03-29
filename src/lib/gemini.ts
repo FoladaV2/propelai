@@ -49,7 +49,7 @@ export async function generatePropelCopy(propertyData: any) {
       'Vera': "Vera's seaside charm with beach access and Mediterranean lifestyle",
       'Mtatsminda': "Mtatsminda's historic heart with cultural landmarks and traditional architecture",
       'Didube': "Didube's emerging investment area with modern developments and growth potential",
-      'default': "Prime Baku location with excellent connectivity and urban amenities"
+      'default': "Prime Tbilisi location with excellent connectivity and urban amenities"
     }
     
     const locationVibe = (districtVibes as any)[district] || districtVibes['default']
@@ -58,7 +58,7 @@ export async function generatePropelCopy(propertyData: any) {
 You are a high-end real estate marketing expert based in Tbilisi, Georgia. Your specialty is creating compelling, culturally-aware property marketing that resonates with local buyers while maintaining international appeal.
 
 PROPERTY DETAILS:
-• Price: ${price} AZN
+• Price: ${price} GEL
 • District: ${district}
 • Size: ${sqm} sqm
 • Rooms: ${rooms}
@@ -71,7 +71,7 @@ TASK: Generate three distinct marketing pieces for this property:
 
 1. INSTAGRAM POST:
 - Catchy, emoji-rich caption with lifestyle hook
-- Include relevant hashtags like #TbilisiRealEstate, #BakuProperty, #GeorgiaRealEstate
+- Include relevant hashtags like #TbilisiRealEstate, #GeorgiaRealEstate, #PropelAI
 - Maximum 300 characters for optimal engagement
 - Focus on aspirational living experience
 

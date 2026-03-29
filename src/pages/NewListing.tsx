@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Layout from '../components/Layout'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -177,29 +178,20 @@ const NewListing: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950" />
-      
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="bg-slate-900/50 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
-          <div className="px-8 py-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
-              >
-                <ArrowLeft size={20} />
-              </button>
-              <div>
-                <h1 className="text-2xl font-semibold text-white">Create New Listing</h1>
-                <p className="text-white/60 text-sm mt-1">AI-powered property marketing in 60 seconds</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-6xl mx-auto px-8 py-8">
+    <Layout
+      title={showPreview ? "AI-Enhanced Preview" : "Create New Listing"}
+      subtitle="AI-powered property marketing in 60 seconds"
+      actions={
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10 flex items-center gap-2"
+        >
+          <ArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+      }
+    >
+      <div className="max-w-4xl mx-auto space-y-8">
           <AnimatePresence mode="wait">
             {!showPreview ? (
               <motion.div
@@ -580,9 +572,8 @@ const NewListing: React.FC = () => {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
       </div>
-    </div>
+    </Layout>
   )
 }
 

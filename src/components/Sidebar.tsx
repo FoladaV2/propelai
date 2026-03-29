@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { LayoutDashboard, Home, Settings, Menu, X, LogOut, Sliders } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -9,15 +8,15 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
-  const [activeItem, setActiveItem] = useState('Dashboard');
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navigationItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, id: 'Dashboard' },
-    { name: 'My Listings', icon: Home, id: 'Listings' },
-    { name: 'AI Lab', icon: Sliders, id: 'AI Lab' },
-    { name: 'Settings', icon: Settings, id: 'Settings' },
+    { name: 'Dashboard', icon: LayoutDashboard, id: 'Dashboard', path: '/dashboard' },
+    { name: 'My Listings', icon: Home, id: 'Listings', path: '/listings' },
+    { name: 'AI Lab', icon: Sliders, id: 'AI Lab', path: '/ai-lab' },
+    { name: 'Settings', icon: Settings, id: 'Settings', path: '/settings' },
   ];
 
   const handleLogout = async () => {
@@ -52,19 +51,14 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       {/* Navigation */}
       <nav className="p-4 space-y-2">
         {navigationItems.map((item) => {
-            const isActive = activeItem === item.id;
+            const isActive = location.pathname.startsWith(item.path);
             const Icon = item.icon;
             
             return (
               <button
                 key={item.id}
                 onClick={() => {
-                  setActiveItem(item.id);
-                  // Navigate to the respective page
-                  if (item.id === 'Dashboard') navigate('/dashboard');
-                  if (item.id === 'Listings') navigate('/listings');
-                  if (item.id === 'AI Lab') navigate('/ai-lab');
-                  if (item.id === 'Settings') navigate('/settings');
+                  navigate(item.path);
                 }}
                 className={`
                   w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all
