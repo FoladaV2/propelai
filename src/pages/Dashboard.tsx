@@ -57,27 +57,28 @@ const Dashboard = () => {
       actions={
         <Link
           to="/new-listing"
-          className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+          className="px-3 md:px-5 py-2 md:py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20"
         >
           <Plus size={18} />
-          Create Listing
+          <span className="hidden sm:inline">Create Listing</span>
+          <span className="sm:hidden">New</span>
         </Link>
       }
     >
       <div className="space-y-8">
 
         {/* Quick Action Card */}
-        <div className="bg-indigo-500/10 backdrop-blur-sm border border-indigo-500/30 rounded-2xl p-8">
+        <div className="bg-indigo-500/10 backdrop-blur-sm border border-indigo-500/30 rounded-2xl p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold text-white mb-2">Create Your Next Listing</h2>
-              <p className="text-white/80 max-w-md">
+              <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">Create Your Next Listing</h2>
+              <p className="text-white/80 max-w-sm md:max-w-md text-sm md:text-base">
                 Transform property photos into professional, market-ready listings in under 60 seconds.
               </p>
             </div>
             <button 
               onClick={() => navigate('/new-listing')}
-              className="px-6 py-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all flex items-center gap-3 group"
+              className="w-full md:w-auto px-6 py-3.5 md:py-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all flex items-center justify-center gap-3 group"
             >
               <Plus size={24} className="group-hover:rotate-90 transition-transform duration-300" />
               New Listing

@@ -5,9 +5,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 interface SidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
+const Sidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: SidebarProps) => {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,11 +27,22 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   };
 
   return (
-    <div className={`
-      fixed left-0 top-0 h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10
-      transition-all duration-300 ease-in-out z-50
-      ${isCollapsed ? 'w-20' : 'w-64'}
-    `}>
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-40"
+          onClick={onMobileClose}
+        />
+      )}
+      
+      <div className={`
+        fixed left-0 top-0 h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10
+        transition-all duration-300 ease-in-out z-50
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        ${isCollapsed ? 'md:w-20' : 'md:w-64'}
+        w-64
+      `}>
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-white/10">
         {!isCollapsed && (
@@ -41,10 +54,22 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           </div>
         )}
         <button
-          onClick={onToggle}
-          className="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
+          onClick={() => {
+            if (window.innerWidth < 768 && onMobileClose) {
+              onMobileClose();
+            } else {
+              onToggle();
+            }
+          }}
+          className="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10 md:block hidden"
         >
           {isCollapsed ? <Menu size={20} /> : <X size={20} />}
+        </button>
+        <button
+          onClick={onMobileClose}
+          className="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10 md:hidden block"
+        >
+          <X size={20} />
         </button>
       </div>
 
@@ -111,7 +136,8 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         )}
       </div>
     </div>
-  );
+  </>
+);
 };
 
 export default Sidebar;

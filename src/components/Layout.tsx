@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
 
 interface LayoutProps {
@@ -10,6 +11,7 @@ interface LayoutProps {
 
 const Layout = ({ children, title, subtitle, actions }: LayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-900 relative flex overflow-hidden">
@@ -28,24 +30,34 @@ const Layout = ({ children, title, subtitle, actions }: LayoutProps) => {
       <Sidebar 
         isCollapsed={isSidebarCollapsed} 
         onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={() => setIsMobileSidebarOpen(false)}
       />
 
       {/* Main Content Area */}
       <div className={`
-        flex-1 flex flex-col h-screen transition-all duration-300 ease-in-out relative z-10
-        ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}
+        flex-1 flex flex-col h-screen transition-all duration-300 ease-in-out relative z-10 w-full
+        ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}
       `}>
         {/* Top Header */}
         <header className="bg-slate-900/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-40 shrink-0 shadow-sm">
-          <div className="max-w-7xl mx-auto px-8 py-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">{title}</h1>
-                {subtitle && <p className="text-white/50 text-sm mt-1 font-medium">{subtitle}</p>}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 md:py-5">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <button
+                  onClick={() => setIsMobileSidebarOpen(true)}
+                  className="md:hidden p-2 -ml-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors shrink-0"
+                >
+                  <Menu size={24} />
+                </button>
+                <div className="overflow-hidden">
+                  <h1 className="text-lg md:text-2xl font-bold text-white tracking-tight truncate">{title}</h1>
+                  {subtitle && <p className="text-white/50 text-xs md:text-sm mt-0.5 md:mt-1 font-medium truncate">{subtitle}</p>}
+                </div>
               </div>
               
               {actions && (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 md:gap-4 shrink-0">
                   {actions}
                 </div>
               )}
@@ -55,7 +67,7 @@ const Layout = ({ children, title, subtitle, actions }: LayoutProps) => {
 
         {/* Page Content scrollable area */}
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto p-8">
+          <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
             {children}
           </div>
         </main>

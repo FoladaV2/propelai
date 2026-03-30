@@ -233,10 +233,10 @@ const NewListing: React.FC = () => {
       actions={
         <button
           onClick={() => navigate('/dashboard')}
-          className="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10 flex items-center gap-2"
+          className="text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10 flex items-center gap-2 text-sm md:text-base"
         >
           <ArrowLeft size={16} />
-          <span>Back</span>
+          <span className="hidden sm:inline">Back</span>
         </button>
       }
     >
@@ -251,7 +251,7 @@ const NewListing: React.FC = () => {
                 className="space-y-8"
               >
                 {/* Image Upload Section */}
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+                <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8">
                   <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
                     <Upload size={20} className="text-indigo-400" />
                     Property Images
@@ -259,7 +259,7 @@ const NewListing: React.FC = () => {
                   
                   {/* Drag and Drop Area */}
                   <div
-                    className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all ${
+                    className={`relative border-2 border-dashed rounded-xl p-8 md:p-12 text-center transition-all ${
                       isDragging 
                         ? 'border-indigo-500 bg-indigo-500/10' 
                         : 'border-white/20 hover:border-white/40 bg-white/5'
@@ -319,14 +319,14 @@ const NewListing: React.FC = () => {
                 </div>
 
                 {/* Property Details Form */}
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+                <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8">
                   <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
                     <Home size={20} className="text-indigo-400" />
                     Property Details
                   </h2>
                   
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                       {/* Title */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-white/80 mb-2">
@@ -464,12 +464,12 @@ const NewListing: React.FC = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <button
                         type="button"
                         onClick={simulateAIProcessing}
                         disabled={uploadedImages.length === 0 || isProcessing || isSaving}
-                        className="flex-1 py-3 px-6 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 py-3.5 px-6 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-none"
                       >
                         {isProcessing ? (
                           <>
@@ -504,7 +504,7 @@ const NewListing: React.FC = () => {
                 className="space-y-8"
               >
                 {/* AI Preview Section */}
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+                <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                       <Sparkles size={20} className="text-indigo-400" />
@@ -608,18 +608,18 @@ const NewListing: React.FC = () => {
                 </div>
 
                 {/* Final Actions */}
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     onClick={() => setShowPreview(false)}
                     disabled={isSaving}
-                    className="py-3 px-6 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50"
+                    className="w-full sm:w-auto py-3.5 px-6 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all disabled:opacity-50 order-2 sm:order-none"
                   >
                     Back to Edit
                   </button>
                   <button 
                     onClick={handlePublish}
                     disabled={isSaving}
-                    className="flex-1 py-3 px-6 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 py-3.5 px-6 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 order-1 sm:order-none"
                   >
                     {isSaving ? <Loader2 size={20} className="animate-spin" /> : 'Publish Listing'}
                   </button>

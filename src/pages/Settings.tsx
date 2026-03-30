@@ -21,16 +21,17 @@ const Settings: React.FC = () => {
       actions={
         <Link
           to="/dashboard"
-          className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+          className="px-3 md:px-5 py-2 md:py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20 text-sm md:text-base shrink-0"
         >
           <Save size={18} />
-          Save Changes
+          <span className="hidden sm:inline">Save Changes</span>
+          <span className="sm:hidden">Save</span>
         </Link>
       }
     >
       <div className="flex flex-col md:flex-row gap-8">
         {/* Settings Sidebar */}
-        <div className="w-full md:w-64 space-y-2 shrink-0">
+        <div className="w-full md:w-64 flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 shrink-0 scrollbar-hide">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -38,11 +39,11 @@ const Settings: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium whitespace-nowrap md:whitespace-normal ${
                   isActive
                     ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
                     : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
+                } ${isActive ? 'flex-1 md:flex-none' : 'flex-none md:flex-none'}`}
               >
                 <Icon size={18} />
                 {tab.label}
@@ -50,7 +51,7 @@ const Settings: React.FC = () => {
             )
           })}
           
-          <div className="pt-6 mt-6 border-t border-white/10">
+          <div className="hidden md:block pt-6 mt-6 border-t border-white/10">
             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-white/50 hover:text-white hover:bg-white/5">
               <HelpCircle size={18} />
               Help & Support
@@ -59,7 +60,7 @@ const Settings: React.FC = () => {
         </div>
 
         {/* Settings Content */}
-        <div className="flex-1 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+        <div className="flex-1 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-8">
           <div className="max-w-2xl">
             {activeTab === 'profile' && (
               <div className="space-y-6">
@@ -80,7 +81,7 @@ const Settings: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                   <div>
                     <label className="block text-sm font-medium text-white/80 mb-2">First Name</label>
                     <input type="text" defaultValue="Propel" className="w-full px-4 py-3 bg-slate-700/50 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all" />

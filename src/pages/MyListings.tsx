@@ -74,10 +74,11 @@ const MyListings: React.FC = () => {
       actions={
         <Link
           to="/new-listing"
-          className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+          className="px-3 md:px-5 py-2 md:py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20 text-sm md:text-base"
         >
           <Plus size={18} />
-          Create Listing
+          <span className="hidden sm:inline">Create Listing</span>
+          <span className="sm:hidden">New</span>
         </Link>
       }
     >
@@ -133,18 +134,18 @@ const MyListings: React.FC = () => {
                   </div>
                   
                   {/* Actions Overlay */}
-                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                      <Edit2 size={14} />
+                  <div className="absolute top-4 right-4 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+                    <button className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors shadow-lg shadow-black/20 border border-white/10">
+                      <Edit2 size={16} />
                     </button>
-                    <button className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors">
-                      <Share2 size={14} />
+                    <button className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors shadow-lg shadow-black/20 border border-white/10">
+                      <Share2 size={16} />
                     </button>
                     <button 
                       onClick={() => listing.id && handleDelete(listing.id)}
-                      className="w-8 h-8 rounded-full bg-rose-500/80 backdrop-blur-md flex items-center justify-center text-white hover:bg-rose-600 transition-colors"
+                      className="w-9 h-9 rounded-full bg-rose-500/90 backdrop-blur-md flex items-center justify-center text-white hover:bg-rose-600 transition-colors shadow-lg shadow-black/20 border border-rose-500/20"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
