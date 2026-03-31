@@ -33,3 +33,51 @@ body {
 .sidebar-item.active:hover {
   background-color: rgba(99, 102, 241, 0.3);
 }
+
+.steam-button {
+  --black: #000000;
+  --ch-black: #141414;
+  --eer-black: #1b1b1b;
+  --night-rider: #2e2e2e;
+  --white: #ffffff;
+  --af-white: #f3f3f3;
+  --ch-white: #e1e1e1;
+  position: relative;
+  border: none;
+  background: transparent;
+  border-radius: 16px;
+}
+
+.steam-button:before, .steam-button:after {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: -1px;
+  border-radius: 18px; /* Matches rounded-2xl */
+  background: linear-gradient(45deg, 
+  var(--ch-black), var(--eer-black),
+  var(--night-rider), var(--ch-white), var(--night-rider), 
+  var(--eer-black), var(--ch-black),var(--ch-black));
+  background-size: 400%;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  z-index: 0;
+  animation: steam 20s linear infinite;
+  opacity: 0.4;
+}
+
+@keyframes steam {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.steam-button:after {
+  filter: blur(8px);
+}
