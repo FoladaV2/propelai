@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../contexts/AuthContext';
 import { Image, Upload, Wand2, Share2, CheckCircle2, ArrowRight, Star } from 'lucide-react';
 import heroBg from '../assets/heropagebg.jpg';
@@ -28,6 +29,14 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 overflow-hidden font-sans selection:bg-indigo-500/30">
+      <Helmet>
+        <title>Propel | Sell Properties 10x Faster with AI Marketing</title>
+        <meta name="description" content="Propel is the ultimate AI marketing tool for real estate agents. Automate your property descriptions, photo editing, and social media posts to close deals faster." />
+        <meta property="og:title" content="Propel | AI Real Estate Marketing Software" />
+        <meta property="og:description" content="Transform listings into premium marketing assets in seconds. Used by 2,500+ top real estate agents." />
+        <link rel="canonical" href="https://propel.ai/" />
+      </Helmet>
+
 
       {/* Navigation */}
       <nav className="absolute w-full top-0 left-0 z-50 border-b border-white/5 bg-slate-900/70 backdrop-blur-2xl shadow-[0_10px_30px_-5px_rgba(0,0,0,0.4)]">

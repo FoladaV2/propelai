@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { useAuth } from '../contexts/AuthContext'
 import Layout from '../components/Layout'
 import { Plus, ArrowRight, Loader2, Home } from 'lucide-react'
 import { listingService } from '../services/listingService'
 import type { Listing } from '../services/listingService'
+
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -51,20 +53,25 @@ const Dashboard = () => {
   };
 
   return (
-    <Layout
-      title={`Welcome back, ${user?.user_metadata?.full_name || 'Agent'}`}
-      subtitle={currentDate}
-      actions={
-        <Link
-          to="/new-listing"
-          className="px-3 md:px-5 py-2 md:py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20"
-        >
-          <Plus size={18} />
-          <span className="hidden sm:inline">Create Listing</span>
-          <span className="sm:hidden">New</span>
-        </Link>
-      }
-    >
+    <>
+      <Helmet>
+        <title>Dashboard | Propel AI</title>
+      </Helmet>
+      <Layout
+        title={`Welcome back, ${user?.user_metadata?.full_name || 'Agent'}`}
+        subtitle={currentDate}
+        actions={
+          <Link
+            to="/new-listing"
+            className="px-3 md:px-5 py-2 md:py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-all font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+          >
+            <Plus size={18} />
+            <span className="hidden sm:inline">Create Listing</span>
+            <span className="sm:hidden">New</span>
+          </Link>
+        }
+      >
+
       <div className="space-y-8">
 
         {/* Quick Action Card */}
@@ -190,7 +197,9 @@ const Dashboard = () => {
         </div>
       </div>
     </Layout>
+    </>
   );
 };
 
 export default Dashboard;
+

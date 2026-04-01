@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sliders, FileText, Video } from 'lucide-react'
+import { Helmet } from 'react-helmet-async'
 import Layout from '../components/Layout'
 import { ImageTransformer, CopyGenerator, VideoGenerator } from '../components/AILab'
 
@@ -10,10 +11,16 @@ const AILab: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('transform')
 
   return (
-    <Layout
-      title="Marketing Studio"
-      subtitle="Professional Property Tools"
-    >
+    <>
+      <Helmet>
+        <title>AI Lab | Professional Real Estate Marketing Studio | Propel</title>
+        <meta name="description" content="Access our full suite of AI-powered real estate marketing tools. Photo editing, description generation, and video creation in one place." />
+      </Helmet>
+      <Layout
+        title="Marketing Studio"
+        subtitle="Professional Property Tools"
+      >
+
       <div className="max-w-6xl mx-auto space-y-6">
             {/* Tab Navigation */}
             <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-2 mb-8 inline-flex">
@@ -55,8 +62,10 @@ const AILab: React.FC = () => {
             </AnimatePresence>
       </div>
     </Layout>
+    </>
   )
 }
+
 
 // ── Small local UI-only sub-component (no logic, fine to keep here) ──────────
 interface TabButtonProps {

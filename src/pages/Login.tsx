@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Helmet } from 'react-helmet-async'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'sonner'
 import { Eye, EyeOff, LogIn } from 'lucide-react'
@@ -48,6 +49,11 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+      <Helmet>
+        <title>Login | Propel AI Real Estate Marketing</title>
+        <meta name="description" content="Sign in to your Propel account to manage your real estate listings and marketing assets." />
+      </Helmet>
+
       {/* Background */}
       <div className="fixed inset-0 bg-slate-900" />
       <div

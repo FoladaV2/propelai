@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { 
-  Video, 
-  Upload, 
-  Play, 
-  Loader2, 
-  Download, 
-  Zap, 
+import {
+  Video,
+  Upload,
+  Play,
+  Loader2,
+  Download,
+  Zap,
   Box,
   MonitorPlay,
   Camera,
@@ -74,33 +74,32 @@ const VideoGenerator: React.FC = () => {
     }
   };
 
-  const costEstimate = duration === '5' ? '$0.35' : '$0.70';
 
   const styles = [
-    { 
-      id: 'drone' as MotionStyle, 
-      label: 'Drone Reveal', 
-      icon: <Box className="w-6 h-6" />, 
-      description: 'Cinematic aerial sweeping shot' 
+    {
+      id: 'drone' as MotionStyle,
+      label: 'Drone Reveal',
+      icon: <Box className="w-6 h-6" />,
+      description: 'Cinematic aerial sweeping shot'
     },
-    { 
-      id: 'cinematic_pan' as MotionStyle, 
-      label: 'Cinematic Pan', 
-      icon: <MonitorPlay className="w-6 h-6" />, 
-      description: 'Smooth indoor walking motion' 
+    {
+      id: 'cinematic_pan' as MotionStyle,
+      label: 'Cinematic Pan',
+      icon: <MonitorPlay className="w-6 h-6" />,
+      description: 'Smooth indoor walking motion'
     },
-    { 
-      id: 'slow_zoom' as MotionStyle, 
-      label: 'Slow Zoom', 
-      icon: <Search className="w-6 h-6" />, 
-      description: 'Dramatic pull-back reveal' 
+    {
+      id: 'slow_zoom' as MotionStyle,
+      label: 'Slow Zoom',
+      icon: <Search className="w-6 h-6" />,
+      description: 'Dramatic pull-back reveal'
     },
   ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 p-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
+
         {/* Left: Input Selection */}
         <div className="space-y-6">
           <div className="bg-slate-900/40 backdrop-blur-md rounded-3xl p-8 border border-white/5 shadow-2xl">
@@ -108,19 +107,18 @@ const VideoGenerator: React.FC = () => {
               <Camera size={20} className="text-indigo-400" />
               1. Upload High-Res Image
             </h3>
-            
-            <div 
+
+            <div
               onClick={() => fileInputRef.current?.click()}
-              className={`relative border-2 border-dashed rounded-2xl p-4 transition-all cursor-pointer group flex flex-col items-center justify-center min-h-[240px] ${
-                imagePreview ? 'border-indigo-500/40' : 'border-white/10 hover:border-indigo-500/40 hover:bg-white/5'
-              }`}
+              className={`relative border-2 border-dashed rounded-2xl p-4 transition-all cursor-pointer group flex flex-col items-center justify-center min-h-[240px] ${imagePreview ? 'border-indigo-500/40' : 'border-white/10 hover:border-indigo-500/40 hover:bg-white/5'
+                }`}
             >
               {imagePreview ? (
                 <div className="w-full h-full relative group">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    className="w-full h-48 object-cover rounded-xl shadow-lg" 
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-48 object-cover rounded-xl shadow-lg"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
                     <p className="text-white text-sm font-medium">Change Image</p>
@@ -135,12 +133,12 @@ const VideoGenerator: React.FC = () => {
                   <p className="text-white/30 text-xs uppercase tracking-widest font-bold">JPG / PNG only</p>
                 </>
               )}
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleImageUpload} 
-                accept="image/jpeg,image/png" 
-                className="hidden" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                accept="image/jpeg,image/png"
+                className="hidden"
               />
             </div>
           </div>
@@ -155,15 +153,13 @@ const VideoGenerator: React.FC = () => {
                 <button
                   key={style.id}
                   onClick={() => setMotionStyle(style.id)}
-                  className={`flex items-center gap-4 p-5 rounded-2xl border transition-all text-left group ${
-                    motionStyle === style.id 
-                      ? 'bg-indigo-500/10 border-indigo-500/40 ring-1 ring-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.1)]' 
-                      : 'bg-slate-900/40 border-white/5 hover:border-white/20'
-                  }`}
+                  className={`flex items-center gap-4 p-5 rounded-2xl border transition-all text-left group ${motionStyle === style.id
+                    ? 'bg-indigo-500/10 border-indigo-500/40 ring-1 ring-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.1)]'
+                    : 'bg-slate-900/40 border-white/5 hover:border-white/20'
+                    }`}
                 >
-                  <div className={`p-3 rounded-xl transition-colors ${
-                    motionStyle === style.id ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-white/40 group-hover:text-white/60'
-                  }`}>
+                  <div className={`p-3 rounded-xl transition-colors ${motionStyle === style.id ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-white/40 group-hover:text-white/60'
+                    }`}>
                     {style.icon}
                   </div>
                   <div>
@@ -190,31 +186,26 @@ const VideoGenerator: React.FC = () => {
                   <button
                     key={d}
                     onClick={() => setDuration(d)}
-                    className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-                      duration === d 
-                        ? 'bg-indigo-500 text-white shadow-lg' 
-                        : 'text-white/30 hover:text-white/60'
-                    }`}
+                    className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${duration === d
+                      ? 'bg-indigo-500 text-white shadow-lg'
+                      : 'text-white/30 hover:text-white/60'
+                      }`}
                   >
                     {d}s
                   </button>
                 ))}
               </div>
             </div>
-            <div className="flex items-center gap-2 text-xs text-white/30 font-bold">
-              <Zap size={14} className="text-amber-400" />
-              Estimated cost: <span className="text-white/60">{costEstimate}</span>
-            </div>
+
           </div>
 
           <button
             onClick={handleGenerate}
             disabled={isGenerating || !selectedImage}
-            className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest transition-all overflow-hidden relative group shadow-2xl ${
-              isGenerating || !selectedImage
-                ? 'bg-slate-800 text-white/20 cursor-not-allowed'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98]'
-            }`}
+            className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest transition-all overflow-hidden relative group shadow-2xl ${isGenerating || !selectedImage
+              ? 'bg-slate-800 text-white/20 cursor-not-allowed'
+              : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98]'
+              }`}
           >
             <span className="relative z-10 flex items-center justify-center gap-3">
               {isGenerating ? (
@@ -232,7 +223,7 @@ const VideoGenerator: React.FC = () => {
         {/* Right: Output Preview */}
         <div className="flex flex-col h-full">
           <div className="bg-slate-900/40 backdrop-blur-md rounded-[2.5rem] border border-white/10 overflow-hidden flex-1 min-h-[500px] flex flex-col relative shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-            
+
             <div className="absolute top-8 left-8 z-10">
               <div className="px-4 py-2 bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 rounded-xl flex items-center gap-2 shadow-lg">
                 <Video size={16} className="text-indigo-400" />
@@ -276,7 +267,7 @@ const VideoGenerator: React.FC = () => {
                 </div>
                 <h4 className="text-xl font-bold text-red-400 mb-2">Generation Failed</h4>
                 <p className="text-white/40 text-sm max-w-sm mb-8">{error}</p>
-                <button 
+                <button
                   onClick={handleGenerate}
                   className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold hover:bg-white/10 transition-all"
                 >
@@ -287,16 +278,16 @@ const VideoGenerator: React.FC = () => {
 
             <AnimatePresence>
               {videoUrl && !isGenerating && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="flex-1 flex flex-col"
                 >
-                  <video 
-                    src={videoUrl} 
-                    controls 
-                    autoPlay 
-                    loop 
+                  <video
+                    src={videoUrl}
+                    controls
+                    autoPlay
+                    loop
                     className="flex-1 w-full h-full object-cover"
                   />
                   <div className="p-6 bg-slate-900 border-t border-white/5 flex items-center justify-between">
@@ -304,8 +295,8 @@ const VideoGenerator: React.FC = () => {
                       <p className="text-sm font-bold text-white">Generation Complete</p>
                       <p className="text-[10px] text-white/30 truncate max-w-[200px] font-medium tracking-wide">Video • {duration}s MP4</p>
                     </div>
-                    <a 
-                      href={videoUrl} 
+                    <a
+                      href={videoUrl}
                       download="listing-video.mp4"
                       target="_blank"
                       rel="noopener noreferrer"
