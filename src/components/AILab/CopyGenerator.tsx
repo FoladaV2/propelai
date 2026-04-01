@@ -94,9 +94,9 @@ const CopyGenerator: React.FC = () => {
         zillow: zil
       })
 
-      toast.success('Smart Copy blocks generated!')
+      toast.success('Professional copy blocks generated')
     } catch (err) {
-      toast.error('Failed to generate copy. Please check your API key.')
+      toast.error('Processing error. Please try again.')
     } finally {
       setIsGenerating(false)
     }
@@ -232,12 +232,12 @@ const CopyGenerator: React.FC = () => {
             {isGenerating ? (
               <>
                 <Loader2 size={24} className="animate-spin" />
-                Generating Copy...
+                Processing Copy...
               </>
             ) : (
               <>
-                <FileText size={24} />
-                Generate Copy
+                <FileText size={22} />
+                Process Marketing Copy
               </>
             )}
           </button>
@@ -275,14 +275,11 @@ const CopyGenerator: React.FC = () => {
 
           <div className="flex-1 p-8 flex flex-col">
             {!content ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 py-12">
-                <div className="w-20 h-20 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                  <FileText size={40} />
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
+                <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-6">
+                  <FileText size={36} className="text-white/10" />
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-1">Waiting for Details</h3>
-                  <p className="text-white/30 text-sm max-w-[240px]">Fill in your property data to generate multi-platform content.</p>
-                </div>
+                <h4 className="text-lg font-semibold text-white/20 lowercase tracking-tight">awaiting property details</h4>
               </div>
             ) : (
               <div className="flex-1 flex flex-col space-y-6">

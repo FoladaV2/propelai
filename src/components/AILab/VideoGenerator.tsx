@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Video,
+  Video as VideoIcon,
   Upload,
-  Play,
   Loader2,
   Download,
-  Zap,
   Box,
   MonitorPlay,
   Camera,
   Search,
   CheckCircle2,
-  X
+  X,
+  Clapperboard,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -25,21 +24,21 @@ const STYLE_OPTIONS: Array<{
 }> = [
   {
     id: 'drone',
-    label: 'Drone Reveal',
+    label: 'Aerial Drone',
     icon: Box,
-    description: 'Cinematic aerial sweeping shot',
+    description: 'Cinematic sweeping exterior',
   },
   {
     id: 'cinematic_pan',
-    label: 'Cinematic Pan',
+    label: 'Interior Pan',
     icon: MonitorPlay,
-    description: 'Smooth indoor walking motion',
+    description: 'Smooth property walk-through',
   },
   {
     id: 'slow_zoom',
-    label: 'Slow Zoom',
+    label: 'Slow Reveal',
     icon: Search,
-    description: 'Dramatic pull-back reveal',
+    description: 'Detailed focal point zoom',
   },
 ]
 
@@ -74,7 +73,7 @@ const VideoGenerator: React.FC = () => {
       setVideoUrl(null);
       setError(null);
     } else {
-      toast.error('Please upload a valid JPG or PNG image');
+      toast.error('Supported formats: JPG, PNG');
     }
   }, [imagePreview]);
 
@@ -89,7 +88,7 @@ const VideoGenerator: React.FC = () => {
 
   const handleGenerate = useCallback(async () => {
     if (!selectedImage) {
-      toast.error('Please upload an image first');
+      toast.error('Source image required');
       return;
     }
 
@@ -101,9 +100,9 @@ const VideoGenerator: React.FC = () => {
       const base64Image = await convertToBase64(selectedImage);
       const url = await generateListingVideo(base64Image, motionStyle, duration);
       setVideoUrl(url);
-      toast.success('Video generated successfully!');
+      toast.success('Production complete');
     } catch (err: any) {
-      const msg = err.message || 'Failed to generate video';
+      const msg = err.message || 'Video production failed';
       setError(msg);
       toast.error(msg);
     } finally {
@@ -111,44 +110,47 @@ const VideoGenerator: React.FC = () => {
     }
   }, [selectedImage, motionStyle, duration]);
 
-  const costEstimate = useMemo(() => (duration === '5' ? '$0.35' : '$0.70'), [duration]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-        {/* Left: Input Selection */}
-        <div className="space-y-6">
-          <div className="bg-slate-900/40 backdrop-blur-md rounded-3xl p-8 border border-white/5 shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-              <Camera size={20} className="text-indigo-400" />
-              1. Upload High-Res Image
-            </h3>
+        {/* Left: Configuration */}
+        <div className="space-y-8">
+          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+            <header className="flex items-center gap-3 mb-8">
+               <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+                 <Camera size={20} className="text-indigo-400" />
+               </div>
+               <div>
+                 <h3 className="text-xl font-bold text-white tracking-tight">Source Media</h3>
+                 <p className="text-white/30 text-[10px] font-black uppercase tracking-widest">Base Asset Upload</p>
+               </div>
+            </header>
 
             <div
               onClick={() => fileInputRef.current?.click()}
-              className={`relative border-2 border-dashed rounded-2xl p-4 transition-all cursor-pointer group flex flex-col items-center justify-center min-h-[240px] ${imagePreview ? 'border-indigo-500/40' : 'border-white/10 hover:border-indigo-500/40 hover:bg-white/5'
+              className={`relative border border-white/10 rounded-2xl p-4 transition-all cursor-pointer group flex flex-col items-center justify-center min-h-[240px] ${imagePreview ? 'bg-indigo-500/5 border-indigo-500/20' : 'bg-white/5 hover:bg-white/10 hover:border-white/20'
                 }`}
             >
               {imagePreview ? (
                 <div className="w-full h-full relative group">
                   <img
                     src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-48 object-cover rounded-xl shadow-lg"
+                    alt="Source"
+                    className="w-full h-48 object-cover rounded-xl shadow-lg border border-white/5"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
-                    <p className="text-white text-sm font-medium">Change Image</p>
+                  <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl font-bold text-white text-xs uppercase tracking-widest">
+                    Replace Asset
                   </div>
                 </div>
               ) : (
-                <>
-                  <div className="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-                    <Upload size={28} className="text-indigo-400" />
+                <div className="text-center group">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-4 transition-all group-hover:bg-indigo-500/20 mx-auto">
+                    <Upload size={24} className="text-white/20 group-hover:text-indigo-400" />
                   </div>
-                  <p className="text-white/60 text-sm mb-1 font-medium">Click or drag to upload</p>
-                  <p className="text-white/30 text-xs uppercase tracking-widest font-bold">JPG / PNG only</p>
-                </>
+                  <p className="text-white/40 text-xs font-bold uppercase tracking-widest">Import Property Photo</p>
+                </div>
               )}
               <input
                 type="file"
@@ -161,34 +163,31 @@ const VideoGenerator: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <Play size={20} className="text-purple-400" />
-              2. Select Transformation
-            </h3>
-            <div className="grid grid-cols-1 gap-4">
+            <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Cinematic Movement</label>
+            <div className="grid grid-cols-1 gap-3">
               {STYLE_OPTIONS.map((style) => (
                 <button
                   key={style.id}
                   onClick={() => setMotionStyle(style.id)}
                   className={`flex items-center gap-4 p-5 rounded-2xl border transition-all text-left group ${motionStyle === style.id
-                    ? 'bg-indigo-500/10 border-indigo-500/40 ring-1 ring-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.1)]'
-                    : 'bg-slate-900/40 border-white/5 hover:border-white/20'
+                    ? 'bg-indigo-500/10 border-indigo-500/30'
+                    : 'bg-white/5 border-white/5 hover:border-white/10'
                     }`}
                 >
-                  <div className={`p-3 rounded-xl transition-colors ${
-                    motionStyle === style.id ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-white/40 group-hover:text-white/60'
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                    motionStyle === style.id ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-800 text-white/40'
                   }`}>
-                    <style.icon className="w-6 h-6" />
+                    <style.icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className={`font-bold ${motionStyle === style.id ? 'text-white' : 'text-white/60'}`}>
+                    <p className={`font-bold text-sm ${motionStyle === style.id ? 'text-white' : 'text-white/70'}`}>
                       {style.label}
                     </p>
-                    <p className="text-xs text-white/30 font-medium">{style.description}</p>
+                    <p className="text-[10px] text-white/30 font-medium tracking-wide mt-0.5">{style.description}</p>
                   </div>
                   {motionStyle === style.id && (
                     <div className="ml-auto">
-                      <CheckCircle2 size={20} className="text-indigo-400" />
+                      <CheckCircle2 size={18} className="text-indigo-400" />
                     </div>
                   )}
                 </button>
@@ -196,17 +195,17 @@ const VideoGenerator: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-slate-900/40 rounded-3xl p-6 border border-white/5">
+          <div className="bg-slate-900 rounded-3xl p-6 border border-white/5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-black uppercase text-white/40 tracking-widest">Video Duration</h3>
-              <div className="flex bg-slate-800 p-1 rounded-xl border border-white/5">
+              <h3 className="text-[10px] font-black uppercase text-white/40 tracking-widest">Production Duration</h3>
+              <div className="flex bg-slate-950 p-1.5 rounded-xl border border-white/5">
                 {(['5', '10'] as Duration[]).map((d) => (
                   <button
                     key={d}
                     onClick={() => setDuration(d)}
-                    className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${duration === d
-                      ? 'bg-indigo-500 text-white shadow-lg'
-                      : 'text-white/30 hover:text-white/60'
+                    className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${duration === d
+                      ? 'bg-indigo-600 text-white shadow-lg'
+                      : 'text-white/20 hover:text-white/40'
                       }`}
                   >
                     {d}s
@@ -214,85 +213,72 @@ const VideoGenerator: React.FC = () => {
                 ))}
               </div>
             </div>
-            <div className="flex items-center gap-2 text-xs text-white/30 font-bold">
-              <Zap size={14} className="text-amber-400" />
-              Estimated cost: <span className="text-white/60">{costEstimate}</span>
-            </div>
           </div>
 
           <button
             onClick={handleGenerate}
             disabled={isGenerating || !selectedImage}
-            className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest transition-all overflow-hidden relative group shadow-2xl ${isGenerating || !selectedImage
-              ? 'bg-slate-800 text-white/20 cursor-not-allowed'
-              : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98]'
+            className={`w-full py-5 rounded-2xl font-bold uppercase tracking-widest transition-all overflow-hidden relative group shadow-2xl ${isGenerating || !selectedImage
+              ? 'bg-slate-900 border border-white/5 text-white/20 cursor-not-allowed'
+              : 'bg-indigo-600 text-white hover:bg-slate-950 hover:border-indigo-600 border border-transparent active:scale-[0.98]'
               }`}
           >
             <span className="relative z-10 flex items-center justify-center gap-3">
               {isGenerating ? (
                 <>
-                  <Loader2 size={24} className="animate-spin" />
-                  Generating Video...
+                  <Loader2 size={24} className="animate-spin text-white/40" />
+                  Processing Video...
                 </>
               ) : (
-                'Generate Video'
+                <>
+                  <Clapperboard size={20} />
+                  Process Video
+                </>
               )}
             </span>
           </button>
         </div>
 
-        {/* Right: Output Preview */}
+        {/* Right: Production Viewport */}
         <div className="flex flex-col h-full">
-          <div className="bg-slate-900/40 backdrop-blur-md rounded-[2.5rem] border border-white/10 overflow-hidden flex-1 min-h-[500px] flex flex-col relative shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+          <div className="bg-slate-900 border border-white/10 rounded-[2.5rem] overflow-hidden flex-1 min-h-[500px] flex flex-col relative shadow-2xl">
 
             <div className="absolute top-8 left-8 z-10">
-              <div className="px-4 py-2 bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 rounded-xl flex items-center gap-2 shadow-lg">
-                <Video size={16} className="text-indigo-400" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">9:16 Reality Vertical</span>
+              <div className="px-4 py-2 bg-slate-950/80 backdrop-blur-md border border-white/10 rounded-xl flex items-center gap-2 shadow-lg">
+                <VideoIcon size={14} className="text-white/40" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Export Target: 9:16 Vertical</span>
               </div>
             </div>
 
             {isGenerating && (
-              <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-lg flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-500">
-                <div className="relative w-32 h-32 mb-8">
-                  <div className="absolute inset-0 border-4 border-indigo-500/20 rounded-full"></div>
-                  <div className="absolute inset-0 border-4 border-t-indigo-500 rounded-full animate-spin"></div>
-                  <div className="absolute inset-4 bg-indigo-500/10 rounded-full flex items-center justify-center overflow-hidden">
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                      transition={{ repeat: Infinity, duration: 2 }}
-                    >
-                      <Zap size={40} className="text-indigo-400 fill-indigo-400/20" />
-                    </motion.div>
-                  </div>
-                </div>
-                <h4 className="text-2xl font-bold text-white mb-4">Rendering Video</h4>
-                <p className="text-white/40 max-w-xs text-sm leading-relaxed">This typically takes 60–90 seconds.</p>
+              <div className="absolute inset-0 z-20 bg-slate-950/95 flex flex-col items-center justify-center p-12 text-center animate-in fade-in duration-500">
+                <div className="w-16 h-16 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-10" />
+                <h4 className="text-xl font-bold text-white mb-2 uppercase tracking-tight">Production in Progress</h4>
+                <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed">Processing cinematic frames & movement...</p>
               </div>
             )}
 
             {!isGenerating && !videoUrl && !error && (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
-                <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                  <MonitorPlay size={40} className="text-white/20" />
+                <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-6">
+                  <MonitorPlay size={36} className="text-white/10" />
                 </div>
-                <h4 className="text-xl font-bold text-white mb-2">Ready to Render</h4>
-                <p className="text-white/30 text-sm max-w-[240px]">Upload an image and select a style to begin video generation.</p>
+                <h4 className="text-lg font-semibold text-white/20 lowercase tracking-tight">awaiting production</h4>
               </div>
             )}
 
             {error && !isGenerating && (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-12 animate-in slide-in-from-bottom duration-500">
-                <div className="w-20 h-20 rounded-2xl bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20">
-                  <X size={32} className="text-red-400" />
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
+                <div className="w-16 h-16 rounded-2xl bg-rose-500/10 flex items-center justify-center mb-6 border border-rose-500/20">
+                  <X size={28} className="text-rose-400" />
                 </div>
-                <h4 className="text-xl font-bold text-red-400 mb-2">Generation Failed</h4>
-                <p className="text-white/40 text-sm max-w-sm mb-8">{error}</p>
+                <h4 className="text-xl font-bold text-rose-400 mb-2">Production Failed</h4>
+                <p className="text-white/30 text-xs font-bold uppercase tracking-widest mb-8">{error}</p>
                 <button
                   onClick={handleGenerate}
-                  className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold hover:bg-white/10 transition-all"
+                  className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
                 >
-                  Try Again
+                  Retry Production
                 </button>
               </div>
             )}
@@ -302,7 +288,7 @@ const VideoGenerator: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex-1 flex flex-col"
+                  className="flex-1 flex flex-col h-full"
                 >
                   <video
                     src={videoUrl}
@@ -311,20 +297,20 @@ const VideoGenerator: React.FC = () => {
                     loop
                     className="flex-1 w-full h-full object-cover"
                   />
-                  <div className="p-6 bg-slate-900 border-t border-white/5 flex items-center justify-between">
+                  <div className="p-8 bg-slate-950 border-t border-white/5 flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-bold text-white">Generation Complete</p>
-                      <p className="text-[10px] text-white/30 truncate max-w-[200px] font-medium tracking-wide">Video • {duration}s MP4</p>
+                      <p className="text-xs font-black text-white/80 uppercase tracking-widest">Asset Ready</p>
+                      <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1">{duration}s Cinema • MP4 Export</p>
                     </div>
                     <a
                       href={videoUrl}
                       download="listing-video.mp4"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-6 py-3 bg-indigo-500 text-white rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all shadow-lg"
+                      className="px-6 py-3 bg-white text-slate-950 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-slate-200 transition-all shadow-xl"
                     >
-                      <Download size={18} />
-                      Download MP4
+                      <Download size={16} />
+                      Export MP4
                     </a>
                   </div>
                 </motion.div>
@@ -339,3 +325,4 @@ const VideoGenerator: React.FC = () => {
 };
 
 export default VideoGenerator;
+

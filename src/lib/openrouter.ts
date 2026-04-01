@@ -78,20 +78,23 @@ export async function transformImage(options: TransformationOptions): Promise<st
 
   const presets: Record<TransformationType, { system: string; default: string }> = {
     staging: {
-      system: 'Expert interior designer.',
-      default: 'Virtually stage this room with high-end, modern, minimalist furniture. Ensure lighting and shadows are realistic.',
+      system: `You are a certified virtual staging specialist for real estate listings. Your role is to digitally furnish empty or sparsely furnished rooms for marketing purposes. This output will be clearly labeled as "Virtually Staged" in all marketing materials.`,
+      default: `Virtually stage this empty or unfurnished room for a real estate listing. Add tasteful, contemporary furniture and decor that is proportionally accurate to the room's true dimensions. Do NOT move, remove, or alter any existing architectural features — walls, floors, ceilings, windows, doors, and fixtures must remain exactly as they appear. Lighting and shadows must match the existing natural light sources in the photo. The result must look photorealistic, as if the furniture was always in the room.`,
     },
+
     twilight: {
-      system: 'Real estate photographer specializing in twilight shots.',
-      default: 'Convert this daytime property photo into a beautiful twilight/golden hour shot. Add warm interior lights and a deep blue sunset sky.',
+      system: `You are a professional real estate photographer specializing in twilight and dusk exterior photography. You produce images that are visually compelling but always faithful to the property's true appearance.`,
+      default: `Convert this daytime exterior property photo into a dusk/twilight shot, as if it were photographed at golden hour. Transition the sky to a deep blue dusk tone with warm ambient light. Add realistic warm interior light glowing from the windows to suggest occupancy and warmth. Do NOT alter the structure, landscaping, driveway, or any architectural detail of the property — only the lighting conditions and sky should change. The property must remain instantly recognizable as the same home.`,
     },
+
     enhance: {
-      system: 'Professional architectural photographer.',
-      default: 'Enhance this property photo. Improve dynamic range, correct lens distortion, and make colors pop with a luxury aesthetic.',
+      system: `You are a professional real estate photographer doing post-processing on property photos. Your goal is to produce the image as it would appear through a high-end wide-angle DSLR camera with perfect exposure — not to idealize or embellish the property beyond its true appearance.`,
+      default: `Enhance this property photo to match the quality of a professional real estate camera shot. Correct the white balance, exposure, and brightness. Fix any lens distortion or perspective skew. Improve color accuracy so surfaces look true-to-life. Remove minor camera artifacts such as noise or motion blur. Do NOT add, remove, or alter any objects, furniture, fixtures, or architectural features. Do NOT make the space appear larger than it is. The result must be an accurate representation of the property as it exists.`,
     },
+
     declutter: {
-      system: 'Professional real estate editor.',
-      default: 'Remove all clutter, personalized items, and messy objects from this room. Create a clean, minimalist, showroom-ready look.',
+      system: `You are a professional real estate photo editor. Your sole task is to remove distracting or personal items from property photos to help buyers focus on the space itself — without altering anything structural or permanent.`,
+      default: `Remove all clutter, personal belongings, and distracting temporary items from this room — such as clothes, toiletries, scattered papers, toys, pet items, and excess decorative objects. Replace removed items by realistically revealing the surface or background beneath them (floor, wall, counter) based on the existing context of the photo. Do NOT remove or alter any permanent fixtures, built-in furniture, appliances, or architectural features. Do NOT rearrange furniture. The room's layout and structure must remain identical — only non-permanent clutter should be removed.`,
     },
   }
 
