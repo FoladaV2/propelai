@@ -75,7 +75,7 @@ const Dashboard = () => {
       <div className="space-y-8">
 
         {/* Quick Action Card */}
-        <div className="bg-indigo-500/10 backdrop-blur-sm border border-indigo-500/30 rounded-2xl p-6 md:p-8">
+        <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">Create Your Next Listing</h2>
@@ -97,7 +97,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link 
             to="/ai-lab" 
-            className="flex items-center gap-4 p-6 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-indigo-500/30 transition-all group"
+            className="flex items-center gap-4 p-6 bg-slate-800/50 border border-white/10 rounded-2xl hover:border-indigo-500/30 transition-colors group"
           >
             <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
               <Plus size={24} />
@@ -109,7 +109,7 @@ const Dashboard = () => {
           </Link>
           <Link 
             to="/ai-lab" 
-            className="flex items-center gap-4 p-6 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-indigo-500/30 transition-all group"
+            className="flex items-center gap-4 p-6 bg-slate-800/50 border border-white/10 rounded-2xl hover:border-indigo-500/30 transition-colors group"
           >
             <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
               <Plus size={24} />
@@ -121,7 +121,7 @@ const Dashboard = () => {
           </Link>
           <Link 
             to="/ai-lab" 
-            className="flex items-center gap-4 p-6 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-indigo-500/30 transition-all group"
+            className="flex items-center gap-4 p-6 bg-slate-800/50 border border-white/10 rounded-2xl hover:border-indigo-500/30 transition-colors group"
           >
             <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
               <Plus size={24} />
@@ -149,19 +149,21 @@ const Dashboard = () => {
           ) : recentListings.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recentListings.map((listing) => (
-                <div key={listing.id} className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-indigo-500/30 transition-all group cursor-pointer">
+                <div key={listing.id} className="bg-slate-800/50 border border-white/10 rounded-2xl overflow-hidden hover:border-indigo-500/30 transition-colors group cursor-pointer">
                   {/* Property Image */}
                   <div className="relative h-48 overflow-hidden">
                     <img 
                       src={listing.image_url || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop'} 
                       alt={listing.address}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     
                     {/* Status Badge */}
                     <div className="absolute top-4 right-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md shadow-lg ${getStatusStyles(listing.status)}`}>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-lg ${getStatusStyles(listing.status)}`}>
                         {listing.status}
                       </span>
                     </div>

@@ -15,7 +15,7 @@ const Layout = ({ children, title, subtitle, actions }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-slate-900 relative flex overflow-hidden">
-      {/* Background gradients */}
+      {/* Keep visual depth cheap for smoother scrolling */}
       <div className="fixed inset-0 bg-slate-900 opacity-80 pointer-events-none" />
       
       {/* Grid pattern overlay */}
@@ -40,7 +40,7 @@ const Layout = ({ children, title, subtitle, actions }: LayoutProps) => {
         ${isSidebarCollapsed ? 'md:ml-20' : 'md:ml-64'}
       `}>
         {/* Top Header */}
-        <header className="bg-slate-900/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-40 shrink-0 shadow-sm">
+        <header className="bg-slate-900/70 border-b border-white/5 sticky top-0 z-40 shrink-0 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-4 md:py-5">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 overflow-hidden">

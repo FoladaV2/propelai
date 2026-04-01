@@ -37,7 +37,7 @@ const Sidebar = ({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: Sidebar
       )}
       
       <div className={`
-        fixed left-0 top-0 h-full bg-slate-900/95 backdrop-blur-xl border-r border-white/10
+        fixed left-0 top-0 h-full bg-slate-900/95 border-r border-white/10
         transition-all duration-300 ease-in-out z-50
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         ${isCollapsed ? 'md:w-20' : 'md:w-64'}

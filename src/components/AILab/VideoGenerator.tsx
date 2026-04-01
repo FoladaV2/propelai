@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Video,
   Upload,
@@ -17,6 +17,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { generateListingVideo, type MotionStyle, type Duration } from '../../lib/falai';
 
+const STYLE_OPTIONS: Array<{
+  id: MotionStyle
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  description: string
+}> = [
+  {
+    id: 'drone',
+    label: 'Drone Reveal',
+    icon: Box,
+    description: 'Cinematic aerial sweeping shot',
+  },
+  {
+    id: 'cinematic_pan',
+    label: 'Cinematic Pan',
+    icon: MonitorPlay,
+    description: 'Smooth indoor walking motion',
+  },
+  {
+    id: 'slow_zoom',
+    label: 'Slow Zoom',
+    icon: Search,
+    description: 'Dramatic pull-back reveal',
+  },
+]
+
 const VideoGenerator: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -28,9 +54,20 @@ const VideoGenerator: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
       setSelectedImage(file);
       const url = URL.createObjectURL(file);
       setImagePreview(url);
@@ -39,7 +76,7 @@ const VideoGenerator: React.FC = () => {
     } else {
       toast.error('Please upload a valid JPG or PNG image');
     }
-  };
+  }, [imagePreview]);
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -50,7 +87,7 @@ const VideoGenerator: React.FC = () => {
     });
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!selectedImage) {
       toast.error('Please upload an image first');
       return;
@@ -72,29 +109,9 @@ const VideoGenerator: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [selectedImage, motionStyle, duration]);
 
-
-  const styles = [
-    {
-      id: 'drone' as MotionStyle,
-      label: 'Drone Reveal',
-      icon: <Box className="w-6 h-6" />,
-      description: 'Cinematic aerial sweeping shot'
-    },
-    {
-      id: 'cinematic_pan' as MotionStyle,
-      label: 'Cinematic Pan',
-      icon: <MonitorPlay className="w-6 h-6" />,
-      description: 'Smooth indoor walking motion'
-    },
-    {
-      id: 'slow_zoom' as MotionStyle,
-      label: 'Slow Zoom',
-      icon: <Search className="w-6 h-6" />,
-      description: 'Dramatic pull-back reveal'
-    },
-  ];
+  const costEstimate = useMemo(() => (duration === '5' ? '$0.35' : '$0.70'), [duration]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 p-6">
@@ -149,7 +166,7 @@ const VideoGenerator: React.FC = () => {
               2. Select Transformation
             </h3>
             <div className="grid grid-cols-1 gap-4">
-              {styles.map((style) => (
+              {STYLE_OPTIONS.map((style) => (
                 <button
                   key={style.id}
                   onClick={() => setMotionStyle(style.id)}
@@ -158,9 +175,10 @@ const VideoGenerator: React.FC = () => {
                     : 'bg-slate-900/40 border-white/5 hover:border-white/20'
                     }`}
                 >
-                  <div className={`p-3 rounded-xl transition-colors ${motionStyle === style.id ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-white/40 group-hover:text-white/60'
-                    }`}>
-                    {style.icon}
+                  <div className={`p-3 rounded-xl transition-colors ${
+                    motionStyle === style.id ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-white/40 group-hover:text-white/60'
+                  }`}>
+                    <style.icon className="w-6 h-6" />
                   </div>
                   <div>
                     <p className={`font-bold ${motionStyle === style.id ? 'text-white' : 'text-white/60'}`}>
@@ -196,7 +214,10 @@ const VideoGenerator: React.FC = () => {
                 ))}
               </div>
             </div>
-
+            <div className="flex items-center gap-2 text-xs text-white/30 font-bold">
+              <Zap size={14} className="text-amber-400" />
+              Estimated cost: <span className="text-white/60">{costEstimate}</span>
+            </div>
           </div>
 
           <button

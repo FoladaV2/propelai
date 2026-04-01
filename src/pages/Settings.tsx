@@ -60,7 +60,7 @@ const Settings: React.FC = () => {
         </div>
 
         {/* Settings Content */}
-        <div className="flex-1 bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-8">
+        <div className="flex-1 bg-slate-800/50 border border-white/10 rounded-2xl p-4 md:p-8">
           <div className="max-w-2xl">
             {activeTab === 'profile' && (
               <div className="space-y-6">

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 import {
   Upload,
@@ -56,11 +56,25 @@ const ImageTransformer: React.FC = () => {
   const [isDownloading, setIsDownloading] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const previewUrlRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current)
+      }
+    }
+  }, [])
 
   const handleImageUpload = useCallback((file: File | null) => {
     if (file && file.type.startsWith('image/')) {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current)
+      }
+      const nextPreviewUrl = URL.createObjectURL(file)
+      previewUrlRef.current = nextPreviewUrl
       setUploadedImage(file)
-      setImagePreview(URL.createObjectURL(file))
+      setImagePreview(nextPreviewUrl)
       setTransformation(null)
       setSliderPosition(50)
       toast.success('Image uploaded successfully')
@@ -123,7 +137,10 @@ const ImageTransformer: React.FC = () => {
     setImagePreview('')
     setTransformation(null)
     setSliderPosition(50)
-    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current)
+      previewUrlRef.current = null
+    }
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -132,7 +149,7 @@ const ImageTransformer: React.FC = () => {
       {/* ── Left Column: Controls ────────────────────────────────────────── */}
       <div className="space-y-6">
         {/* Step 1: Upload */}
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+        <div className={`bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-8 ${!imagePreview ? 'min-h-[500px] flex flex-col' : ''}`}>
           <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
             <span className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-bold">1</span>
             Upload Property Photo
@@ -143,7 +160,7 @@ const ImageTransformer: React.FC = () => {
               imagePreview
                 ? 'border-indigo-500/50 bg-indigo-500/5'
                 : 'border-white/10 hover:border-white/30 bg-slate-900/50 hover:bg-slate-900/80'
-            }`}
+            } ${!imagePreview ? 'flex-1 flex items-center justify-center' : ''}`}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
